@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="address" class="com.henjie.pojo.Address">
+        <property name="address" value="大连交通大学"/>
+    </bean>
+
+    <bean id="student" class="com.henjie.pojo.Student">
+        <!--        第一种：普通值注入，直接使用value-->
+        <property name="name" value="高洁"/>
+
+        <!--        第二种：Bean注入-->
+        <property name="address" ref="address"/>
+
+        <!--        第三种：数组注入-->
+        <property name="books">
+            <array>
+                <value>缘分的天空</value>
+                <value>回复术士的重启人生</value>
+                <value>天降之物</value>
+            </array>
+        </property>
+
+        <!--        第四种：List注入-->
+        <property name="hobbys">
+            <list>
+                <value>唱</value>
+                <value>跳</value>
+                <value>rap</value>
+                <value>篮球</value>
+            </list>
+        </property>
+
+        <!--        第五种：Map注入-->
+        <property name="card">
+            <map>
+                <entry key="身份证" value="123456"/>
+                <entry key="手机" value="654321"/>
+            </map>
+        </property>
+
+        <!--        第六种：Set注入-->
+        <property name="games">
+            <set>
+                <value>CF</value>
+                <value>DNF</value>
+            </set>
+        </property>
+
+        <!--    第七种：NULL注入-->
+        <property name="wife">
+            <null/>
+        </property>
+
+        <!--    第八种：Properties注入-->
+        <property name="info">
+            <props>
+                <prop key="学号">2021010316</prop>
+                <prop key="班级">软件工程</prop>
+            </props>
+        </property>
+    </bean>
+
+
+</beans>

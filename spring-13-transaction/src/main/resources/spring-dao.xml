@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        https://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!--DataSource：使用Spring的数据源替换Mybatis的配置
+        Class使用Spring提供的JDBC DriverManagerDataSource 驱动管理数据源
+    -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/mybatis?useSSL=true&amp;useUnicode=true&amp;characterEncoding=utf-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value="chixin12356"/>
+    </bean>
+
+    <!--sqlSessionFactory-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <!--绑定Mybatis配置文件-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!--绑定Mapper配置文件-->
+        <property name="mapperLocations" value="classpath:com/henjie/mapper/*.xml"/>
+    </bean>
+
+    <!--通过sqlSessionFactory，利用SqlSessionTemplate（XXX模板）实现SqlSession的功能-->
+        <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <!--只能使用构造器注入sqlSessionFactory，因为源码中没有set方法-->
+        <constructor-arg index="0" ref="sqlSessionFactory"/>
+    </bean>
+
+    <!--配置声明式事务-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--通过构造器将数据源放入事务-->
+        <constructor-arg ref="dataSource" />
+    </bean>
+    
+    <!--结合AOP，实现事务的置入，即实现CRUD时自动横切执行事务-->
+    <!--配置事务通知，固定的-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <!--设置给哪些方法配置事务-->
+        <!--配置事务的传播特性 在声明式的事务处理中，要配置一个切面，其中就用到了propagation（传播）-->
+        <!--REQUIRED：支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择。
+        NESTED：支持当前事务，如果当前事务存在，则执行一个嵌套事务，如果当前没有事务，就新建一个事务。-->
+        <tx:attributes>
+            <tx:method name="add" propagation="REQUIRED"/>
+            <tx:method name="delete" propagation="REQUIRED"/>
+            <tx:method name="update" propagation="REQUIRED"/>
+            <!--read-only="true" 表示查询只能读，不能进行增删改-->
+            <tx:method name="query" read-only="true"/>
+            <!--真实场景，只需要*这1条就好-->
+            <tx:method name="*" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--AOP：配置事务切入-->
+    <aop:config>
+        <!--设置切入点，mapper下的所有类，所有方法，所有属性
+        这个包下的所有方法都会被编织事务-->
+        <aop:pointcut id="txPointCut" expression="execution(* com.henjie.mapper.*.*(..))"/>
+        <!--将事务通知切入切入点-->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointCut"/>
+    </aop:config>
+    <aop:aspectj-autoproxy  proxy-target-class="true"/>
+</beans>

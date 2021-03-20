@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+<!--有参构造第一种：下标赋值，下标为0，为第1个参数-->
+<bean id="user" class="com.henjie.pojo.User" name="u1,u2 u3">
+    <constructor-arg name="name" value="高洁"/>
+</bean>
+<alias name="user" alias="us"/>
+</beans>

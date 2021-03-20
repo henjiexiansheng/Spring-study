@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace绑定一个特定的DAO/Mappr接口-->
+<mapper namespace="com.henjie.mapper.UserMapper">
+    <select id="selectUser" resultType="user">
+        select * from mybatis.user;
+    </select>
+
+    <select id="getUserByID" resultType="user" parameterType="int">
+        select * from mybatis.user where id = #{id};
+    </select>
+
+    <insert id="addUser" parameterType="user">
+        insert into mybatis.user (id,name,pwd) values (#{id},#{name},#{pwd})
+    </insert>
+
+    <delete id="deleteUser" parameterType="int">
+        delete from mybatis.user where id = #{id}
+    </delete>
+
+    <update id="updateUser" parameterType="user">
+        update mybatis.user set name = #{name},pwd = #{pwd} where id = #{id}
+    </update>
+
+    <insert id="addUser2" parameterType="map">
+        insert into mybatis.user (id,name,pwd) values (#{aaa},#{bbb},#{ccc})
+    </insert>
+
+    <select id="getUserLike" resultType="user" parameterType="String">
+        select * from mybatis.user where name like "%"#{name}"%"
+    </select>
+
+    <resultMap id="UserMap" type="user">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="pwd" property="pwd"/>
+    </resultMap>
+
+    <select id="getUserByLimit" resultMap="UserMap">
+        select * from mybatis.user limit #{startIndex},#{pageSize}
+    </select>
+
+</mapper>
